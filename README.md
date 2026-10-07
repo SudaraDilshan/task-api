@@ -7,6 +7,8 @@ It is organized into three separate layers: Controllers, Services, and Repositor
 
 ```text
 task-api/
+  public/
+    index.html      -> Interactive Web UI & Live API Inspector Dashboard
   src/
     routes/         -> Presentation / Routing Layer (HTTP endpoints mapping)
     controllers/    -> Presentation Layer (HTTP request/response handling)
@@ -30,7 +32,9 @@ task-api/
    npm start
    ```
 
-3. The server will run on `http://localhost:3000`
+3. Open the UI or access the API:
+   - **Interactive Web UI**: Open [http://localhost:3000](http://localhost:3000) in your browser.
+   - **API Endpoints Base**: `http://localhost:3000/tasks`
 
 ## API Endpoints
 

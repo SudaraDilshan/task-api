@@ -9,6 +9,7 @@
  * ============================================================
  */
 
+const path = require("path");
 const express = require("express");
 const taskRoutes = require("./routes/taskRoutes");
 
@@ -17,6 +18,9 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
+// Serve static frontend UI from public/
+app.use(express.static(path.join(__dirname, "../public")));
 
 // ---- Routes ----
 app.use("/tasks", taskRoutes);
