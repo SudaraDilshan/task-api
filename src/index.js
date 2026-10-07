@@ -30,7 +30,12 @@ app.get("/health", (req, res) => {
   res.json({ status: "OK", message: "Task API is running" });
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`✅ Task API running on http://localhost:${PORT}`);
-});
+// Start the server if run directly (local development)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`✅ Task API running on http://localhost:${PORT}`);
+  });
+}
+
+// Export app for serverless environments (Vercel, tests)
+module.exports = app;
