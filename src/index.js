@@ -10,7 +10,7 @@
  */
 
 const express = require("express");
-const taskController = require("./controllers/taskController");
+const taskRoutes = require("./routes/taskRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,12 +18,8 @@ const PORT = process.env.PORT || 3000;
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-// ---- Routes (HTTP → Controller mapping) ----
-app.get("/tasks", taskController.getAllTasks);
-app.get("/tasks/:id", taskController.getTaskById);
-app.post("/tasks", taskController.createTask);
-app.put("/tasks/:id", taskController.updateTask);
-app.delete("/tasks/:id", taskController.deleteTask);
+// ---- Routes ----
+app.use("/tasks", taskRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {

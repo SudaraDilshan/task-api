@@ -17,15 +17,36 @@
 const taskService = require("../services/taskService");
 
 /**
+ * Helper to map service errors to proper HTTP response codes.
+ * - 404: Resource not found.
+ * - 400: Client validation/input error.
+ * - 500: Unexpected internal server error.
+ */
+function handleError(res, error) {
+  if (error.message === "Task not found") {
+    return res.status(404).json({ error: error.message });
+  }
+  if (
+    error.message === "Invalid task ID" ||
+    error.message.includes("required") ||
+    error.message.includes("must be") ||
+    error.message.includes("provided")
+  ) {
+    return res.status(400).json({ error: error.message });
+  }
+  return res.status(500).json({ error: error.message || "Internal server error" });
+}
+
+/**
  * GET /tasks
  * Returns all tasks as JSON.
  */
-exports.getAllTasks = (req, res) => {
+exports.getAllTasks = async (req, res) => {
   try {
-    const tasks = taskService.getAllTasks();
+    const tasks = await taskService.getAllTasks();
     res.status(200).json(tasks);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    handleError(res, error);
   }
 };
 
@@ -33,12 +54,12 @@ exports.getAllTasks = (req, res) => {
  * GET /tasks/:id
  * Returns a single task or 404.
  */
-exports.getTaskById = (req, res) => {
+exports.getTaskById = async (req, res) => {
   try {
-    const task = taskService.getTaskById(req.params.id);
+    const task = await taskService.getTaskById(req.params.id);
     res.status(200).json(task);
   } catch (error) {
-    res.status(404).json({ error: error.message });
+    handleError(res, error);
   }
 };
 
@@ -46,12 +67,12 @@ exports.getTaskById = (req, res) => {
  * POST /tasks
  * Creates a new task. Returns 201 on success, 400 on validation error.
  */
-exports.createTask = (req, res) => {
+exports.createTask = async (req, res) => {
   try {
-    const task = taskService.createTask(req.body);
+    const task = await taskService.createTask(req.body);
     res.status(201).json(task);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    handleError(res, error);
   }
 };
 
@@ -59,12 +80,12 @@ exports.createTask = (req, res) => {
  * PUT /tasks/:id
  * Updates an existing task.
  */
-exports.updateTask = (req, res) => {
+exports.updateTask = async (req, res) => {
   try {
-    const task = taskService.updateTask(req.params.id, req.body);
+    const task = await taskService.updateTask(req.params.id, req.body);
     res.status(200).json(task);
   } catch (error) {
-    res.status(404).json({ error: error.message });
+    handleError(res, error);
   }
 };
 
@@ -72,11 +93,11 @@ exports.updateTask = (req, res) => {
  * DELETE /tasks/:id
  * Deletes a task.
  */
-exports.deleteTask = (req, res) => {
+exports.deleteTask = async (req, res) => {
   try {
-    const result = taskService.deleteTask(req.params.id);
+    const result = await taskService.deleteTask(req.params.id);
     res.status(200).json(result);
   } catch (error) {
-    res.status(404).json({ error: error.message });
+    handleError(res, error);
   }
 };

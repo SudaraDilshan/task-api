@@ -21,27 +21,28 @@ let idCounter = 1;
 
 /**
  * Find all tasks from storage.
- * @returns {Array} List of all tasks.
+ * @returns {Promise<Array>} List of all tasks.
  */
-exports.findAll = () => {
-  return tasks;
+exports.findAll = async () => {
+  return tasks.map((task) => ({ ...task }));
 };
 
 /**
  * Find a single task by its ID.
  * @param {number} id - The task ID.
- * @returns {Object|null} The task or null if not found.
+ * @returns {Promise<Object|null>} The task or null if not found.
  */
-exports.findById = (id) => {
-  return tasks.find((task) => task.id === id) || null;
+exports.findById = async (id) => {
+  const task = tasks.find((t) => t.id === id);
+  return task ? { ...task } : null;
 };
 
 /**
  * Save a new task to storage.
  * @param {Object} data - Task data (title, description, etc.).
- * @returns {Object} The saved task with a generated ID.
+ * @returns {Promise<Object>} The saved task with a generated ID.
  */
-exports.save = (data) => {
+exports.save = async (data) => {
   const newTask = {
     id: idCounter++,
     title: data.title,
@@ -51,28 +52,28 @@ exports.save = (data) => {
     createdAt: new Date().toISOString(),
   };
   tasks.push(newTask);
-  return newTask;
+  return { ...newTask };
 };
 
 /**
  * Update an existing task by ID.
  * @param {number} id - The task ID.
  * @param {Object} updates - Fields to update.
- * @returns {Object|null} The updated task or null if not found.
+ * @returns {Promise<Object|null>} The updated task or null if not found.
  */
-exports.update = (id, updates) => {
+exports.update = async (id, updates) => {
   const task = tasks.find((t) => t.id === id);
   if (!task) return null;
-  Object.assign(task, updates);
-  return task;
+  Object.assign(task, updates, { updatedAt: new Date().toISOString() });
+  return { ...task };
 };
 
 /**
  * Delete a task by ID.
  * @param {number} id - The task ID.
- * @returns {boolean} True if deleted, false if not found.
+ * @returns {Promise<boolean>} True if deleted, false if not found.
  */
-exports.remove = (id) => {
+exports.remove = async (id) => {
   const index = tasks.findIndex((t) => t.id === id);
   if (index === -1) return false;
   tasks.splice(index, 1);

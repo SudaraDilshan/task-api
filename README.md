@@ -5,60 +5,75 @@ It is organized into three separate layers: Controllers, Services, and Repositor
 
 ## Project Structure
 
+```text
 task-api/
   src/
-    controllers/    -> Presentation Layer (HTTP handling)
-    services/       -> Business Logic Layer (Core rules)
+    routes/         -> Presentation / Routing Layer (HTTP endpoints mapping)
+    controllers/    -> Presentation Layer (HTTP request/response handling)
+    services/       -> Business Logic Layer (Core validation & rules)
     repositories/   -> Data Access Layer (Storage handling)
+    index.js        -> Application entry point & server bootstrap
   .gitignore
   README.md
   package.json
+```
 
 ## How to Run
 
 1. Install dependencies:
+   ```bash
    npm install
+   ```
 
 2. Start the server:
+   ```bash
    npm start
+   ```
 
-3. The server will run on http://localhost:3000
+3. The server will run on `http://localhost:3000`
 
 ## API Endpoints
 
-GET /tasks          - Get all tasks
-GET /tasks/:id      - Get a single task by ID
-POST /tasks         - Create a new task
-PUT /tasks/:id      - Update an existing task
-DELETE /tasks/:id   - Delete a task
-GET /health         - Health check
+- `GET /tasks`         - Get all tasks
+- `GET /tasks/:id`     - Get a single task by ID
+- `POST /tasks`        - Create a new task (body: `title`, `description`, `priority`, `status`)
+- `PUT /tasks/:id`     - Update an existing task
+- `DELETE /tasks/:id`  - Delete a task
+- `GET /health`        - Health check
 
-## Example Request
+## Example Requests
 
-Create a task:
+**Create a task:**
+```bash
+curl -X POST http://localhost:3000/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Complete Workshop Assignment", "priority": "high"}'
+```
 
-curl -X POST http://localhost:3000/tasks -H "Content-Type: application/json" -d "{\"title\": \"Buy groceries\", \"priority\": \"high\"}"
-
-Get all tasks:
-
+**Get all tasks:**
+```bash
 curl http://localhost:3000/tasks
+```
 
-## How Layer Separation Is Maintained
+## Layer Separation & Architecture
 
-The project follows a strict 3-tier structure.
+The project follows a strict 3-tier monolithic architecture aligned with **SOLID Principles** and **Clean Architecture**:
 
-The controllers folder handles only HTTP requests and responses. It does not contain any business logic.
+1. **Routing (`src/routes/`) & Controllers (`src/controllers/`) - Presentation Layer**
+   - Focuses solely on HTTP concerns (parsing request params/body, serializing JSON, and returning proper HTTP status codes like `200`, `201`, `400`, `404`, and `500`).
+   - Contains zero business validation and zero database queries.
 
-The services folder contains all the business rules and validation. It does not know about HTTP or the database.
+2. **Services (`src/services/`) - Business Logic Layer**
+   - Contains all domain rules, data sanitization, and invariant checks (e.g. title length, allowed priorities: `low`, `medium`, `high`, status validation).
+   - Completely agnostic of HTTP (`req`, `res`) and database drivers.
 
-The repositories folder handles only data storage and retrieval. It does not contain any business rules.
+3. **Repositories (`src/repositories/`) - Data Access Layer**
+   - Handles storage, retrieval, and persistence logic exclusively.
+   - All repository operations return Promises (`async/await`) and return cloned data to protect internal state encapsulation.
 
-Each layer only talks to the layer directly below it. The controller calls the service, and the service calls the repository. This keeps the code maintainable, extensible, and easy to test.
+## Alignment with Architectural Principles
 
-## Why This Structure Matters
-
-High cohesion means related code stays together in one layer.
-
-Loose coupling means each layer depends as little as possible on the others.
-
-This makes the application easy to maintain and easy to extend. For example, to switch from in-memory storage to a real database, only the repository layer needs to change. The controllers and services remain untouched.
+- **High Cohesion**: Every layer has a single, well-defined responsibility.
+- **Loose Coupling**: Layers communicate downward via well-defined boundaries. Controllers only call Services; Services only call Repositories.
+- **Open-Closed Principle (OCP)**: Because the repository layer exposes an asynchronous contract, swapping the in-memory array for MongoDB, PostgreSQL, or MySQL requires changes **only** in the repository layer—controllers and services remain untouched.
+- **Single Responsibility Principle (SRP)**: Each class/module has one and only one reason to change. Routing maps endpoints, controllers handle HTTP transport, services enforce business logic, and repositories manage persistence.
