@@ -3,10 +3,18 @@
 A simple backend Task Management API built as a 3-Tier Monolith.
 It is organized into three separate layers: Controllers, Services, and Repositories.
 
+> 🌐 **Live Demo (Vercel):** [https://task-api-mocha-zeta.vercel.app/](https://task-api-mocha-zeta.vercel.app/)  
+> 🟢 **Live Health Check:** [https://task-api-mocha-zeta.vercel.app/health](https://task-api-mocha-zeta.vercel.app/health)  
+> 📡 **Live API Base:** [https://task-api-mocha-zeta.vercel.app/tasks](https://task-api-mocha-zeta.vercel.app/tasks)
+
+![TaskFlow Manager Dashboard](./docs/dashboard.png)
+
 ## Project Structure
 
 ```text
 task-api/
+  docs/
+    dashboard.png   -> Application UI screenshot
   public/
     index.html      -> Interactive Web UI & Live API Inspector Dashboard
   src/
@@ -15,6 +23,9 @@ task-api/
     services/       -> Business Logic Layer (Core validation & rules)
     repositories/   -> Data Access Layer (Storage handling)
     index.js        -> Application entry point & server bootstrap
+  api/
+    index.js        -> Serverless function entry point for Vercel
+  vercel.json       -> Vercel deployment & routing configuration
   .gitignore
   README.md
   package.json
@@ -22,6 +33,11 @@ task-api/
 
 ## How to Run
 
+### Option 1: View Online (No setup needed)
+Visit the deployed application on Vercel:
+👉 **[https://task-api-mocha-zeta.vercel.app/](https://task-api-mocha-zeta.vercel.app/)**
+
+### Option 2: Run Locally
 1. Install dependencies:
    ```bash
    npm install
